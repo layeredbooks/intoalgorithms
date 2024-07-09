@@ -13,13 +13,15 @@ void add_edges(Graph &g)
     g.add_edge(0, 1);
     g.add_edge(2, 1);
     g.add_edge(3, 4);
-    g.add_edge(5, 4);
     g.add_edge(3, 5);
+    g.add_edge(3, 8);
+    g.add_edge(5, 4);
     g.add_edge(6, 3);
     g.add_edge(6, 7);
+    g.add_edge(8, 9);
 }
 
-std::vector<int> expected_undirected(int v_start)
+std::vector<int> expected_undirected(int v_start, bool adj_mat)
 {
     if (v_start == 0)
     {
@@ -27,7 +29,14 @@ std::vector<int> expected_undirected(int v_start)
     }
     else if (v_start == 3)
     {
-        return {3, 4, 5, 6, 7};
+        if (adj_mat)
+        {
+            return {3, 4, 5, 6, 7, 8, 9};
+        }
+        else
+        {
+            return {3, 4, 5, 8, 9, 6, 7};
+        }
     }
     else
     {
@@ -43,7 +52,7 @@ std::vector<int> expected_directed(int v_start)
     }
     else if (v_start == 3)
     {
-        return {3, 4, 5};
+        return {3, 4, 5, 8, 9};
     }
     else
     {
@@ -74,7 +83,7 @@ TEST_CASE("DFS")
             add_edges(g);
             auto dfs = make_dfs(g);
             dfs.traverse(v_start);
-            REQUIRE(dfs.get_path() == expected_undirected(v_start));
+            CHECK(dfs.get_path() == expected_undirected(v_start, false));
         }
         SECTION("AdjMat")
         {
@@ -82,7 +91,7 @@ TEST_CASE("DFS")
             add_edges(g);
             auto dfs = make_dfs(g);
             dfs.traverse(v_start);
-            REQUIRE(dfs.get_path() == expected_undirected(v_start));
+            CHECK(dfs.get_path() == expected_undirected(v_start, true));
         }
     }
     SECTION("Directed")
@@ -93,7 +102,7 @@ TEST_CASE("DFS")
             add_edges(g);
             auto dfs = make_dfs(g);
             dfs.traverse(v_start);
-            REQUIRE(dfs.get_path() == expected_directed(v_start));
+            CHECK(dfs.get_path() == expected_directed(v_start));
         }
         SECTION("AdjMat")
         {
@@ -101,7 +110,7 @@ TEST_CASE("DFS")
             add_edges(g);
             auto dfs = make_dfs(g);
             dfs.traverse(v_start);
-            REQUIRE(dfs.get_path() == expected_directed(v_start));
+            CHECK(dfs.get_path() == expected_directed(v_start));
         }
     }
 }

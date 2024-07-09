@@ -49,11 +49,21 @@ public:
 private:
     void write_gv_directed(std::ofstream &file, std::string_view delimiter) const
     {
+        std::set<int> nodes;
         for (int v = 0; v < GraphRepr::get_n_nodes(); v++)
         {
             for (auto nb : GraphRepr::get_nb_vec(v))
             {
                 file << v << " " << delimiter << " " << nb << std::endl;
+                nodes.insert(v);
+                nodes.insert(nb);
+            }
+        }
+        for (int v = 0; v < GraphRepr::get_n_nodes(); v++)
+        {
+            if (!nodes.contains(v))
+            {
+                file << v << std::endl;
             }
         }
     }
@@ -61,6 +71,7 @@ private:
     void write_gv_undirected(std::ofstream &file, std::string_view delimiter) const
     {
         std::set<std::pair<int, int>> edges;
+        std::set<int> nodes;
         for (int v = 0; v < GraphRepr::get_n_nodes(); v++)
         {
             for (auto nb : GraphRepr::get_nb_vec(v))
@@ -72,6 +83,15 @@ private:
                 file << v << " " << delimiter << " " << nb << std::endl;
                 edges.insert({v, nb});
                 edges.insert({nb, v});
+                nodes.insert(v);
+                nodes.insert(nb);
+            }
+        }
+        for (int v = 0; v < GraphRepr::get_n_nodes(); v++)
+        {
+            if (!nodes.contains(v))
+            {
+                file << v << std::endl;
             }
         }
     }
@@ -98,6 +118,8 @@ private:
     void make_png_file(std::string_view gv_file_name, std::string_view png_file_name) const
     {
         std::string cmd = "dot " + std::string(gv_file_name) + " -Tpng -o " + std::string(png_file_name);
+        // https://stackoverflow.com/questions/13417411/laying-out-a-large-graph-with-graphviz
+        // std::string cmd = "sfdp -x -Goverlap=scale -Tpng " + std::string(gv_file_name) + " > " + std::string(png_file_name);
         int res = std::system(cmd.c_str());
         if (res != 0)
         {
