@@ -31,7 +31,7 @@ public:
     {
         for (size_t v = 0; v < get_n_nodes(); ++v)
         {
-            std::cout << v << "->";
+            std::cout << v << " ->";
             for (auto v_nb : get_nb_vec(v))
             {
                 std::cout << " " << v_nb;
